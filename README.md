@@ -248,7 +248,109 @@ work with.
 
 ### Much of the testing code is duplicated
 
+We're aghast that that people routinely cut-n-paste their application code,
+but we don't even notice when people do this in their test code. More than
+once I've worked on a test suite with a significant logic change and I've had
+to find this duplicated code and either change it many places or try to
+refactor it so that it's in a single place and then change it. We already know
+why duplicated code is bad, I'm unsure why we tolerate this in test suites.
 
+Much of my work in tests has been to reduce this duplication. For example,
+many test scripts lists the same set of modules at the top. I did a heuristic
+analysis of tests on the CPAN and chose the most popular testing modules and
+that allowed me to change this:
+
+    use strict;
+    use warnings;
+    use Test::Exception;
+    use Test::Differences;
+    use Test::Deep;
+    use Test::Warn;
+    use Test::More tests => 42;
+
+To this:
+
+    use Test::Most tests => 42;
+
+You can easily use similar strategies to bundle up common testing modules
+into a common testing module that all of your tests use. Less boilerplate and
+you can easily dive into testing.
+
+Or as a more egregious example, I often see something like this:
+
+    set_up_some_data($id);
+    my $object = Object->new($id);
+
+    is $object->attr1, $expected1, 'attr1 works';
+    is $object->attr2, $expected2, 'attr2 works';
+    is $object->attr3, $expected3, 'attr3 works';
+    is $object->attr4, $expected4, 'attr4 works';
+    is $object->attr5, $expected5, 'attr5 works';
+
+And then a few lines later:
+
+    set_up_some_data($new_id);
+    $object = Object->new($new_id);
+
+    is $object->attr1, $new_expected1, 'attr1 works';
+    is $object->attr2, $new_expected2, 'attr2 works';
+    is $object->attr3, $new_expected3, 'attr3 works';
+    is $object->attr4, $new_expected4, 'attr4 works';
+    is $object->attr5, $new_expected5, 'attr5 works';
+
+And then a few lines later, the same thing ...
+
+And in another test file, the same thing ...
+
+Put that in its own test function and wrap those attribute tests in a loop. If
+this patter is repeated in different test files, put it in a custom test
+library:
+
+    sub test_fetching_by_id {
+        my ( $id, $tests ) = @_;
+        my $object = Object->new($id);
+
+        # this causes diagnostics to display the file and line number of the
+        # caller
+        local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+        foreach my $test (@$tests) {
+            my ( $attribute, $expected ) = @$test;
+            is $object->$attribute, $expected, "$attribute works";
+        }
+    }
+
+And then you call it like this:
+
+    my %id_tests = (
+        $id => [
+            [ attr1 => $expected1 ],
+            [ attr2 => $expected2 ],
+            [ attr3 => $expected3 ],
+            [ attr4 => $expected4 ],
+            [ attr5 => $expected5 ],
+        ],
+        $new_id => [
+            [ attr1 => $new_expected1 ],
+            [ attr2 => $new_expected2 ],
+            [ attr3 => $new_expected3 ],
+            [ attr4 => $new_expected4 ],
+            [ attr5 => $new_expected5 ],
+        ],
+    );
+
+    while ( my ( $id, $tests ) = each %id_tests ) {
+        test_fetching_by_id( $id, $tests );
+    }
+
+This is a cleanly refactored data-driven approach. By not repeating yourself,
+if you need to test new attributes, you can just add an extra line to the data
+structures and the code remains the same. Or, if you need to change the logic,
+you know you only have one spot in your code where this is done. Once a
+developer understands the `test_fetching_by_id()`, then can reuse this
+understanding in multiple places. Further, it makes it easier to find patterns
+in your code and any competent programmer is always on the lookout for
+patterns because those are signposts leading to cleaner designs.
 
 ### Testing fixtures are frequently not used (or poorly used)
 

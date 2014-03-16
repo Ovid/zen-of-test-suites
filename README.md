@@ -1,4 +1,6 @@
-# The Zen of Test::Class::Moose - Serious testing for serious software
+# The Zen of Test Suites
+
+Serious testing for serious software
 
 ## Introduction
 

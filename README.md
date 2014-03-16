@@ -95,11 +95,40 @@ Another issue with warnings in the test suite is that they condition
 developers to ignore warnings. We get so used to them that we stop reading
 them, even if something serious is going on (on a related note, I often listed
 to developers complain about stack traces, but a careful reading of a stack
-trace will often reveal the exact cause of the exception).
+trace will often reveal the exact cause of the exception). New warnings crop
+up, warnings change, but developers conditioned to ignore them often overlook
+serious issues with their code.
+
+**Recommendation**: Eliminate all warnings from your test suite, but
+investigate each one to understand if it reflects a serious issue. Also, some
+tests will capture STDERR, effectively hiding warnings. Making warnings fatal
+while running tests can help to overcome this problem.
 
 ### Tests often fail ("oh, that sometimes fails. Ignore it.")
 
+For one client, their hour-long test suite had many failing tests. When I
+first started working on it, I had a developer walk me through all of the
+failure and explain why they failed and why they were hard to fix. Obviously
+this is a far more serious problem than warnings, but in the minds of the
+developers, they were under constant deadline pressures and as far as
+management was concerned, the test suite was practically a luxury, not
+"serious code." As a result, developers learned to recognize these failures
+and consoled themselves with the thought that they understood the underlying
+issues.
 
+Of course, that's not really how it works. The developer explaining the test
+failures admitted that he didn't understand some of them and with longer test
+suites that routinely fail, more failures tend to crop up, but developers
+conditioned to accept failures tend not to notice them. They kick off the test
+suite, run and grab some coffee and later glance over results to see if they
+look reasonable (that's assuming they run all of the tests, something which
+often stops happening at this point). What's worse, continuous integration
+tools are often built to accomodate this. From the Jenkin's [xUnit Plugin
+page](https://wiki.jenkins-ci.org/display/JENKINS/xUnit+Plugin):
+
+> Features
+>  * Records xUnit tests
+>  * Mark the build unstable or fail according to threshold values
 
 ### There is little evidence of organization
 

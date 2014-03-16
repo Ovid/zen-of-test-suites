@@ -126,7 +126,7 @@ often stops happening at this point). What's worse, continuous integration
 tools are often built to accomodate this. From the Jenkin's [xUnit Plugin
 page](https://wiki.jenkins-ci.org/display/JENKINS/xUnit+Plugin):
 
-> Features
+> # Features
 >  * Records xUnit tests
 >  * Mark the build unstable or fail according to threshold values
 

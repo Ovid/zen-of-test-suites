@@ -8,8 +8,8 @@ Serious testing for serious software
 different, more disciplined approach than testing libraries. I describe common
 mis-features experienced in large application test suites and follow with
 desirable features. Much of what I describe below is generic and applies to
-test suites written in any programming language. As I get further along, I'll
-start discussing
+test suites written in any programming language, despite many examples being
+written in Perl. As I get further along, I'll start discussing
 [Test::Class::Moose](https://github.com/Ovid/test-class-moose), a testing
 framework written in Perl. While the concepts will still generally be generic,
 the implementation examples will be in Perl.
@@ -96,7 +96,8 @@ test suites?
 * Code coverage should be able to analyze different aspects of the system
 
 But first, let's take a look at some of the problems and try to understand
-their impacts.
+their impacts. While it's good to push a test suite into a desirable state,
+often this is risky if the underlying problems are ignored.
 
 ### Tests often emit warnings
 
@@ -162,9 +163,88 @@ but you need to understand the risks and be prepared to accept them. However,
 for the purposes of this document, we'll assume that the acceptable level of
 failure is zero.
 
+If you absolutely cannot fix a particular failure, you should at least mark
+the test as `TODO` so that the test suite can pass. Not only does this help to
+guide you to a clean test suite, the `TODO` reason is generally embedded in
+the test, giving the next developer a clue what's going on.
+
 ### There is little evidence of organization
 
+As mentioned previously, a common lament amongst developers is the difficulty
+of finding tests for the code they're working on. Consider the case of
+[HTML::TokeParser::Simple](http://search.cpan.org/dist/HTML-TokeParser-Simple/).
+The library is organized like this:
 
+    lib/
+    └── HTML
+        └── TokeParser
+            ├── Simple
+            │   ├── Token
+            │   │   ├── Comment.pm
+            │   │   ├── Declaration.pm
+            │   │   ├── ProcessInstruction.pm
+            │   │   ├── Tag
+            │   │   │   ├── End.pm
+            │   │   │   └── Start.pm
+            │   │   ├── Tag.pm
+            │   │   └── Text.pm
+            │   └── Token.pm
+            └── Simple.pm
+
+There's a class in their named
+`HTML::TokeParser::Simple::Token::ProcessInstruction`. Where, in the following
+tests, would you find the tests for process instructions?
+
+    t
+    ├── constructor.t
+    ├── get_tag.t
+    ├── get_token.t
+    ├── internals.t
+    └── munge_html.t
+
+You might think it's in the `get_token.t` test, but are you sure? And
+what's that strange `munge_html.t` test? Or the `internals.t` test? As
+mentioned, for a small library, this really isn't too bad. However, what if we
+reorganized our tests to reflect our library hierarchy?
+
+    t/
+    └── tests/
+        └── html/
+            └── tokeparser/
+                ├── simple/
+                │   ├── token/
+                │   │   ├── comment.t
+                │   │   ├── declaration.t
+                │   │   ├── tag/
+                │   │   │   ├── end.t
+                │   │   │   └── start.t
+                │   │   ├── tag.t
+                │   │   └── text.t
+                │   └── token.t
+                └── simple.t 
+
+It's clear that the tests for `HTML::TokeParser::Simple::Token::Tag::Start` that
+the tests are in `t/tests/html/tokeparser/simple/token/tag/start.t`. And you can
+see easily that there is not file for `processinstruction.t`. This test
+organization not only makes it easy to find where your tests are, it's also
+easy to program your editor to automatically switch between the code and the
+tests for the code. For large test suites, this saves a huge amount of time.
+When I reorganized the test suite of the BBC's central metadata repository,
+[PIPs](http://www.bbc.co.uk/blogs/bbcinternet/2009/02/what_is_pips.html), I
+followed a similar pattern and it made our life much easier.
+
+Of course, your test suite could easily be more complicated and your top-level
+directories inside of your test directory may be structured differently:
+
+    t
+    ├── unit/
+    ├── integration/
+    ├── api/
+    └── web/
+
+So long as the test directories in those top-level directories follow a
+predictable, discoverable structure, the test suite should be much easier to
+work with.
 
 ### Much of the testing code is duplicated
 

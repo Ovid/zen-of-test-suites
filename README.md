@@ -223,9 +223,9 @@ reorganized our tests to reflect our library hierarchy?
                 │   └── token.t
                 └── simple.t 
 
-It's clear that the tests for `HTML::TokeParser::Simple::Token::Tag::Start` that
-the tests are in `t/tests/html/tokeparser/simple/token/tag/start.t`. And you can
-see easily that there is not file for `processinstruction.t`. This test
+It's clear that the tests for `HTML::TokeParser::Simple::Token::Tag::Start`
+that the tests are in `t/tests/html/tokeparser/simple/token/tag/start.t`. And
+you can see easily that there is no file for `processinstruction.t`. This test
 organization not only makes it easy to find where your tests are, it's also
 easy to program your editor to automatically switch between the code and the
 tests for the code. For large test suites, this saves a huge amount of time.

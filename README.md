@@ -307,8 +307,8 @@ this pattern is repeated in different test files, put it in a custom test
 library:
 
     sub test_fetching_by_id {
-        my ( $id, $tests ) = @_;
-        my $object = Object->new($id);
+        my ( $class, $id, $tests ) = @_;
+        my $object = $class->new($id);
 
         # this causes diagnostics to display the file and line number of the
         # caller
@@ -340,7 +340,7 @@ And then you call it like this:
     );
 
     while ( my ( $id, $tests ) = each %id_tests ) {
-        test_fetching_by_id( $id, $tests );
+        test_fetching_by_id( 'Object', $id, $tests );
     }
 
 This is a cleanly refactored data-driven approach. By not repeating yourself,

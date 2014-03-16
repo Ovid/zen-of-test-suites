@@ -303,7 +303,7 @@ And then a few lines later, the same thing ...
 And in another test file, the same thing ...
 
 Put that in its own test function and wrap those attribute tests in a loop. If
-this patter is repeated in different test files, put it in a custom test
+this pattern is repeated in different test files, put it in a custom test
 library:
 
     sub test_fetching_by_id {

@@ -4,6 +4,16 @@ Serious testing for serious software
 
 ## Introduction
 
+**Note**: This document is about testing applications. They require a
+different, more disciplined approach than testing libraries. I describe common
+mis-features experienced in large application test suites and follow with
+desirable features. Much of what I describe below is generic and applies to
+test suites written in any programming language. As I get further along, I'll
+start discussing
+[Test::Class::Moose](https://github.com/Ovid/test-class-moose), a testing
+framework written in Perl. While the concepts will still generally be generic,
+the implementation examples will be in Perl.
+
 I often speak with developers who take a new job and they describe a Web site
 built out of a bunch of `.pl` scripts scattered randomly through directories,
 lots of duplicated code, poor use of modules, with embedded SQL and printing
@@ -74,7 +84,19 @@ try to address these problems (in other words, from easiest to hardest).
 * They take far too long to run
 * Code coverage is spotty
 
-Let's take a look at some of these issues and try to understand their impacts.
+Problems are one thing, but what features do we want to see in large-scale
+test suites?
+
+* Tests should be very easy to write and run
+* They should run relatively quickly
+* The order in which tests run should not matter
+* Test output should be clean
+* It should be obvious where to find tests for a particular piece of code
+* Testing code should not be duplicated
+* Code coverage should be able to analyze different aspects of the system
+
+But first, let's take a look at some of the problems and try to understand
+their impacts.
 
 ### Tests often emit warnings
 
@@ -130,6 +152,16 @@ page](https://wiki.jenkins-ci.org/display/JENKINS/xUnit+Plugin):
 >  * Records xUnit tests
 >  * Mark the build unstable or fail according to threshold values
 
+In other words, there's an "acceptable" level of failure. What's the
+acceptable level of failure when you debit someone's credit card, or you're
+sending their medical records to someone, or you're writing embedded software
+that can't be easily updated?
+
+Dogmatism aside, you can make a case for acceptable levels of test failure,
+but you need to understand the risks and be prepared to accept them. However,
+for the purposes of this document, we'll assume that the acceptable level of
+failure is zero.
+
 ### There is little evidence of organization
 
 
@@ -144,6 +176,5 @@ page](https://wiki.jenkins-ci.org/display/JENKINS/xUnit+Plugin):
 
 
 ### Code coverage is spotty
-
 
 

@@ -311,7 +311,7 @@ library:
         my $object = $class->new($id);
 
         # this causes diagnostics to display the file and line number of the
-        # caller
+        # caller on failure, rather than reporting *this* file and line number
         local $Test::Builder::Level = $Test::Builder::Level + 1;
 
         foreach my $test (@$tests) {

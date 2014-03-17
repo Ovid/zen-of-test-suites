@@ -2,37 +2,35 @@
 
 Serious testing for serious software (work in progress)
 
-## Introduction
+## Note
 
 This document is about testing applications — it's not about how to write
 tests. Application test suites require a different, more disciplined approach
 than library test suites. I describe common misfeatures experienced in large
 application test suites and follow with recommendations on best practices.
 Much of what I describe below is generic and applies to test suites written in
-any programming language, despite many examples being written in Perl. As I
-get further along, I'll start discussing
-[Test::Class::Moose](https://github.com/Ovid/test-class-moose), a testing
-framework written in Perl. While the concepts will still generally be generic,
-the implementation examples will be in Perl.
+any programming language, despite many examples being written in Perl.
+
+# Introduction
 
 I often speak with developers who take a new job and they describe a Web site
-built out of a bunch of `.pl` scripts scattered randomly through directories,
-lots of duplicated code, poor use of modules, with embedded SQL and printing
-HTTP headers and HTML directly. The developers shake their head in despair,
-but grudgingly admit an upside: job security. New features are time-consuming
-to add, changes are difficult to implement and may have wide-ranging
-side-effects, and reorganizing the code base to have a proper separation of
-concerns, to make it cheaper and safer to hack on, will take lots and lots of
-time.
+built out of a bunch of separate scripts scattered randomly through
+directories, lots of duplicated code, poor use of modules, with embedded SQL
+and printing HTTP headers and HTML directly. The developers shake their head
+in despair, but grudgingly admit an upside: job security. New features are
+time-consuming to add, changes are difficult to implement and may have
+wide-ranging side-effects, and reorganizing the codebase to have a proper
+separation of concerns, to make it cheaper and safer to hack on, will take
+lots and lots of time.
 
 A bunch of randomly scattered scripts, no separation of concerns, lots of
 duplicated code, poor use of modules, SQL embedded directly in them? Does this
-sound familiar? It's your standard Perl test suite. We're horrified by this in
-the code, but don't bat an eyelash at the test suite.
+sound familiar? It's your standard test suite. We're horrified by this in the
+code, but don't bat an eyelash at the test suite.
 
-Part of this is because much, if not most, of the Perl testing culture focuses
-on testing distributions, not applications. If you were to look at the tests
-for my module
+Part of this is because much, if not most, of the testing examples we find
+focus on testing distributions, not applications. If you were to look at the
+tests for my module
 [DBIx::Class::EasyFixture](https://github.com/Ovid/dbix-class-easyfixture),
 you'd see the following tests:
 
@@ -51,31 +49,32 @@ These tests were added one by one, as I added new features to
 different feature.
 
 For a small distribution, this isn't too bad because it's very easy to keep it
-all in your head. With only 9 files, it's trivial to glance at them, or grep
-them, to figure out where the relevant tests are. Applications, however, are a
-different story. This is from one of my customer's test suites:
+all in your head. With only nine files, it's trivial to glance at them, or
+grep them, to figure out where the relevant tests are. Applications, however,
+are a different story. This is the number of files from one of my customer's
+test suites:
 
     $ find t -type f | wc -l
     288
 
-That's actually fairly small. One code base I worked on had close to a million
-lines of code with thousands of test scripts. You couldn't hold the code base
+That's actually fairly small. One codebase I worked on had close to a million
+lines of code with thousands of test scripts. You couldn't hold the codebase
 in your head, you're couldn't *glance* at the the tests to figure out what
 went where, nor was grepping necessarily going to tell you as tests for
 particular sections of code were often scattered around multiple test scripts.
 And, of course, I regularly heard the lament that I've heard at many shops
-with larger code bases: where are the tests for feature *X*? Instead of just
+with larger codebases: where are the tests for feature *X*? Instead of just
 sitting down and writing code, the developers are hunting for the tests,
-wondering if there are any, and, if not, trying to figure out where to put
-their new tests.
+wondering if there are any tests for the feature they're working on and, if
+not, trying to figure out where to put their new tests.
 
 Unfortunately, this disorganzation is only the start of the problem.
 
 ## Large-scale test suites
 
-I've worked with many companies with large test suites and they tend to
-share some common problems. I list them in below in roughly the order I
-try to address these problems (in other words, from easiest to hardest).
+I've worked with many companies with large test suites and they tend to share
+some common problems. I list them in below in the order I try to address these
+problems (in other words, roughly easiest to hardest).
 
 * Tests often emit warnings
 * Tests often fail ("oh, that sometimes fails. Ignore it.")
@@ -134,7 +133,7 @@ while running tests can help to overcome this problem.
 
 For one client, their hour-long test suite had many failing tests. When I
 first started working on it, I had a developer walk me through all of the
-failure and explain why they failed and why they were hard to fix. Obviously
+failures and explain why they failed and why they were hard to fix. Obviously
 this is a far more serious problem than warnings, but in the minds of the
 developers, they were under constant deadline pressures and as far as
 management was concerned, the test suite was practically a luxury, not
@@ -172,9 +171,9 @@ guide you to a clean test suite, the `TODO` reason is generally embedded in
 the test, giving the next developer a clue what's going on.
 
 **Recommendation**: Do not allow any failing tests. If tests fail which do not
-impact the correctness of the appliaction (such as documentation or "coding style"
-tests), they should be separated from your regular tests in some manner and
-your systems should recognize that it's OK for them to fail.
+impact the correctness of the application (such as documentation or "coding
+style" tests), they should be separated from your regular tests in some manner
+and your systems should recognize that it's OK for them to fail.
 
 ### There is little evidence of organization
 
@@ -199,7 +198,7 @@ The library is organized like this:
             │   └── Token.pm
             └── Simple.pm
 
-There's a class in their named
+There's a class in there named
 `HTML::TokeParser::Simple::Token::ProcessInstruction`. Where, in the following
 tests, would you find the tests for process instructions?
 
@@ -232,14 +231,18 @@ reorganized our tests to reflect our library hierarchy?
                 └── simple.t 
 
 It's clear that the tests for `HTML::TokeParser::Simple::Token::Tag::Start`
-that the tests are in `t/tests/html/tokeparser/simple/token/tag/start.t`. And
-you can see easily that there is no file for `processinstruction.t`. This test
+are in `t/tests/html/tokeparser/simple/token/tag/start.t`. And you can see
+easily that there is no file for `processinstruction.t`. This test
 organization not only makes it easy to find where your tests are, it's also
 easy to program your editor to automatically switch between the code and the
 tests for the code. For large test suites, this saves a huge amount of time.
 When I reorganized the test suite of the BBC's central metadata repository,
 [PIPs](http://www.bbc.co.uk/blogs/bbcinternet/2009/02/what_is_pips.html), I
 followed a similar pattern and it made our life much easier.
+
+(**Note**: the comment about programming your editor is important. Effective
+use of your editor/IDE is one of the most powerful tools in a developer's
+toolbox.)
 
 Of course, your test suite could easily be more complicated and your top-level
 directories inside of your test directory may be structured differently:
@@ -279,11 +282,12 @@ To this:
 
     use Test::Most tests => 42;
 
-You can easily use similar strategies to bundle up common testing modules
-into a common testing module that all of your tests use. Less boilerplate and
-you can easily dive into testing.
+You can easily use similar strategies to bundle up common testing modules into
+a single testing module that all of your tests use. Less boilerplate and you
+can easily dive into testing.
 
-Or as a more egregious example, I often see something like this:
+Or as a more egregious example, I often see something like this (a silly
+example just for illustration purposes):
 
     set_up_some_data($id);
     my $object = Object->new($id);
@@ -353,8 +357,8 @@ And then you call it like this:
 This is a cleanly refactored data-driven approach. By not repeating yourself,
 if you need to test new attributes, you can just add an extra line to the data
 structures and the code remains the same. Or, if you need to change the logic,
-you know you only have one spot in your code where this is done. Once a
-developer understands the `test_fetching_by_id()`, then can reuse this
+you only have one spot in your code where this is done. Once a developer
+understands the `test_fetching_by_id()` function, they can reuse this
 understanding in multiple places. Further, it makes it easier to find patterns
 in your code and any competent programmer is always on the lookout for
 patterns because those are signposts leading to cleaner designs.
@@ -370,10 +374,10 @@ clean separation of data and code.
 In your test suite, we also want a clean separation of data and code (in my
 experience, this is very hit-or-miss), but we often *need* to know the data we
 have. We set up data to run tests against to ensure that we can test various
-conditions. Can we give a customer a birthday discount if they
-were born February 29th? Can a customer with an overdue library book check out
-another? If our employee number is no longer in the database, is our code
-properly deleted, along with the backups? (kidding!)
+conditions. Can we give a customer a birthday discount if they were born
+February 29th? Can a customer with an overdue library book check out another?
+If our employee number is no longer in the database, is our code properly
+deleted, along with the backups and the git history erased? (kidding!)
 
 When we set up the data for these known conditions under which to test, we
 call the data a [test fixture](http://en.wikipedia.org/wiki/Test_fixture).
@@ -444,7 +448,7 @@ One attempt I've made to fix this situation is releasing
 [DBIx::Class::EasyFixture](http://search.cpan.org/dist/DBIx-Class-EasyFixture/lib/DBIx/Class/EasyFixture.pm),
 along with [a tutorial](http://search.cpan.org/dist/DBIx-Class-EasyFixture/lib/DBIx/Class/EasyFixture/Tutorial.pm).
 It does rely on `DBIx::Class`, the most popular ORM for Perl. This will likely
-make it unsuitable for some uses cases.
+make it unsuitable for some use cases.
 
 Using them is very simple:
 
@@ -462,7 +466,7 @@ particularly those which are pure `DBI` based are welcome in this area.
 **Recommendation**: Fine-grained, well-documented fixtures which are easy to
 create and easy to clean up.
 
-### Code coverage is spotty
+### Code coverage is poorly understood
 
 Consider the following code:
 
@@ -478,16 +482,18 @@ Congratulations! You now have 100% code coverage of that function.
 
 For a statically typed language, I'm probably going to be moderately
 comfortable with that test. Alas, for dynamically typed languages we're
-fooling ourselves. An equivalent function in Perl will pass that test if use
-`recip("2 apples")` as the argument. And what happens if we pass a file
+fooling ourselves. An equivalent function in Perl will pass that test if we
+use `recip("2 apples")` as the argument. And what happens if we pass a file
 handle? And would a Unicode number work? What happens if we pass no arguments?
 Perl is powerful and lets us write code quickly, but there's a price: it
 expects us to know what we're doing and passing unexpected kinds of data is a
-very common source of error, but one that 100% code coverage will never (no
-pun intended) uncover. This can lead to false confidence. To work around this,
-always assume that you write applications to create things and you write tests
-to destroy them. Testing is, and should be, an act of violence. If you're not
-breaking anything with your tests, you're probably doing it wrong.
+very common source of errors, but one that 100% code coverage will never (no
+pun intended) uncover. This can lead to false confidence.
+
+To work around false confidence in your code, always assume that you write
+applications to create things and you write tests to destroy them. Testing is,
+and should be, an act of violence. If you're not breaking anything with your
+tests, you're probably doing it wrong.
 
 Or what if you have that code in a huge test suite, but it's dead code? We
 tend to blindly run code coverage over our entire test suite, never
@@ -536,7 +542,12 @@ only run coverage over tests including the tags you wish to test:
       include_tags => [qw/api/],
     })->runtests;
 
-**Recommendation**: Only run `Devel::Cover` over public-facing code.
+If you start tagging your tests by the subsystems they are testing, you can
+then start running code coverage on specific subsystems to determine which
+ones are poorly tested.
+
+**Recommendation**: Run coverage over public-facing code and on different
+subsystems to find poor coverage.
 
 ### They take far too long to run
 
@@ -548,26 +559,27 @@ that I have also personally experienced many times.
 
 *With apologies to [XKCD](http://xkcd.com/303/)*
 
-In the best case scenario for a long-running test suite, expensive developer
-time is wasted while the test suite is running. When they launch that
-hour-long (or more) test suite, they frequently take a break, talk to (read:
-interrupt) other developers, check their Facebook, or do any number of things
-which equate to "not writing software." Yes, some of those things involve
-meetings or research, but meetings don't conveniently schedule themselves when
-we run tests and for mature products (those which are more likely to have
-long-running test suites), there's often not that much research we really need
-to do.
+In the best case scenario for developers who always run that long-running test
+suite, expensive developer time is wasted while the test suite is running.
+When they launch that hour-long (or more) test suite, they frequently take a
+break, talk to (read: interrupt) other developers, check their Facebook, or do
+any number of things which equate to "not writing software." Yes, some of
+those things involve meetings or research, but meetings don't conveniently
+schedule themselves when we run tests and for mature products (those which are
+more likely to have long-running test suites), there's often not that much
+research we really need to do.
 
 Here are some of the issues with long-running test suites:
 
 * Expensive developer time is wasted while the test suite runs
 * Developers often don't run the entire test suite
+* Expensive code coverage is not generated as a result
 * Code is fragile as a result
 
 What I find particularly curious is that we accept this state of affairs. Even
 a back-of-the-envelope calculation can quickly show significant productivity
 benefits that will pay off in the long run by taking care of our test suite.
-[I once reduced a sample test suite's run time from one hour and twenty minutes down
+[I once reduced a BBC test suite's run time from one hour and twenty minutes down
 to twelve
 minutes](http://www.slideshare.net/Ovid/turbo-charged-test-suites-presentation)
 (*Note: today I use a saner approach that results in similar or greater
@@ -578,11 +590,14 @@ comfortable with it. This led to other developers finding buggy code and
 wasting time trying to figure out how they broken it when, in fact, someone
 else broke the code.
 
-But let's assume each developer was running the test suite at least once a
-day. By cutting test suite run time by over an hour, we reclaimed a *full day*
-of developer productivity every day! Even if it takes a developer a month to
-increase perfomance by that amount it pays for itself many times over very
-quickly. Why would you not do this?
+But let's assume each developer was running the test suite at least once a day
+(I'm careful about testing and often ran mine twice a day). By cutting test
+suite run time by over an hour, we reclaimed a *full day* of developer
+productivity every day! Even if it takes a developer a month to increase
+perfomance by that amount it pays for itself many times over very quickly.
+Why would you not do this?  As a business owner, wouldn't you want your
+developers to save time on their test suite so they can create features faster
+for you?
 
 There are several reasons why this is difficult. Tasking a developer with a
 block of time to speed up a test suite means the developer is not creating
@@ -608,13 +623,13 @@ overcome the discovered limitations.
 The single biggest factor in poor test suite performance for applications is
 frequently I/O. In particular, working with the database tends to be a
 bottleneck and there's only so much database tuning that can be done. After
-you've profiles your SQL and optimized it, several database-related
+you've profiled your SQL and optimized it, several database-related
 optimizations which can be considered are:
 
 1. Using transactions to clean up your database rather than rebuilding the
    database
 2. Only connect to the database once per test suite (hard when you're using
-   separate processes
+   a separate processe per test file)
 3. If you must rebuild the database, maintain a pool of test databases and
    assign them as needed, rebuilding used ones in the background
 4. Use smaller database fixtures instead of loading everything at once
@@ -645,6 +660,12 @@ JSON. As the test suite used JSON extensively, switching to
 [JSON::XS](http://search.cpan.org/dist/JSON-XS/XS.pm) gave us a nice
 performance boost. We may not have noticed that if we hadn't been profiling
 our code.
+
+#### Look for code with "global" effects
+
+On one test suite, I ensured that `Universal::isa` and `Universal::can` cannot
+be loaded. It was a quick fix and sped up the test suite by 2% (several small
+accumulations of improvements can add up quickly).
 
 #### Inline "hot" functions.
 
@@ -699,13 +720,13 @@ Linux distributions ship with a threaded Perl by default. Depending on the
 version of Perl you ship with, you can gain performance improvements of up to
 30% by recompiling without threads. Of course, if you use threads, you'll feel
 very stupid for doing this. However, if you don't make heavy use of threads,
-switching for a forking model for the threaded code may make the recompile
+switching to a forking model for the threaded code may make the recompile
 worth it. Naturally, you'll need to heavily benchmark your code (preferably
 under production-like loads) to understand the trade-offs here.
 
 #### Preload modules
 
-If your code base makes heavy use of modules that are slow to load, such as
+If your codebase makes heavy use of modules that are slow to load, such as
 `Moose`, `Catalyst`, `DBIx::Class` and others, preloading them might help.
 [forkprove](http://search.cpan.org/~miyagawa/forkprove-v0.4.9/script/forkprove)
 is a utility written by Tatsuhiko Miyagawa that allows you to preload
@@ -740,10 +761,10 @@ to create an effective parallel testing setup. You can use this with
 `TAP::Parser::Multiplexer` to create your parallel tests. Unfortunately, as of
 this writing there's a bug in the Multiplexer whereby it uses `select` in a
 loop to read the parser output. If one parser blocks, none of the other output
-is run. Further, the schedule must be created prior to loading your test code,
-meaning that if your tests would prefer a different schedule. Also, `make
-test` currently doesn't handle this well. There is work being done by David
-Golden to alleviate this problem.
+is read. Further, the schedule must be created prior to loading your test
+code, meaning that if your tests would prefer a different schedule, you're out
+of luck. Also, `make test` currently doesn't handle this well. There is work
+being done by David Golden to alleviate this problem.
 
 My preferred solution is to use
 [Test::Class::Moose](http://search.cpan.org/dist/Test-Class-Moose/). That has
@@ -754,8 +775,9 @@ that they're run sequentially after the parallel tests.
 Aside from the regular benefits of `Test::Class::Moose`, an interesting
 benefit of this module is that it loads all of your test and application code
 into a single process and *then* forks off subprocesses. As a result, your
-code is loaded once and only once. Strategies which try to fork before loading
-your code might still cause the code to be loaded multiple times.
+code is loaded once and only once. Alternate strategies which try to fork
+before loading your code might still cause the code to be loaded multiple
+times.
 
 I have used this strategy to reduce a [12 minute test suite to 30
 seconds](http://blogs.perl.org/users/ovid/2013/12/merry-christmas-parallel-testing-with-testclassmoose-has-arrived.html).
@@ -770,7 +792,7 @@ tests on those servers. Obviously, this requires multiple servers.
 If you want to roll your own version of this, I've also released
 [TAP::Stream](http://search.cpan.org/dist/TAP-Stream/), a module that allows
 you to take streams (the text, actually) of TAP from multiple sources and
-combine them into a single stream.
+combine them into a single TAP document.
 
 #### Devel::CoverX::Covered
 
@@ -806,8 +828,8 @@ use for testing libraries, but it really shines for application testing.
 
 Note that I now regret putting `Moose` in the name. `Test::Class::Moose` is a
 rewrite of `Test::Class` using `Moose`, but it's *not* limited to testing
-`Moose` applications. It uses `Moose` because internally it relies on
-`Moose`'s meta-object protocal for introspection.
+`Moose` applications. It uses `Moose` because internally it relies on the
+`Moose` meta-object protocol for introspection.
 
 Out of the box you get:
 
@@ -818,14 +840,15 @@ Out of the box you get:
 * Full Moose support
 * Test control methods (startup, setup, teardown, shutdown)
 * Extensibility
+* All the testing functions and behavior from `Test::Most`
 
 To learn about xUnit testing in Perl, you may wish to read a five-part
 tutorial I published at Modern Perl Books:
 
 1. [Organizing test suites with Test::Class](http://www.modernperlbooks.com/mt/2009/03/organizing-test-suites-with-testclass.html)
-2. [Reusing test code with Test::Class](http://www.modernperlbooks.com/mt/2009/03/reusing-test-code-with-testclass.html)
+2. [Reusing test code](http://www.modernperlbooks.com/mt/2009/03/reusing-test-code-with-testclass.html)
 3. [Making your testing life easier](http://www.modernperlbooks.com/mt/2009/03/making-your-testing-life-easier.html)
-4. [Using test control methods with Test::Class](http://www.modernperlbooks.com/mt/2009/03/using-test-control-methods-with-testclass.html)
+4. [Using test control methods](http://www.modernperlbooks.com/mt/2009/03/using-test-control-methods-with-testclass.html)
 5. [Working with Test::Class test suites](http://www.modernperlbooks.com/mt/2009/03/working-with-testclass-test-suites.html)
 
 That tutorial is slightly out of date (I wrote it five years ago), but it

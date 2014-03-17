@@ -81,8 +81,8 @@ try to address these problems (in other words, from easiest to hardest).
 * There is little evidence of organization
 * Much of the testing code is duplicated
 * Testing fixtures are frequently not used (or poorly used)
-* They take far too long to run
 * Code coverage is spotty
+* They take far too long to run
 
 Problems are one thing, but what features do we want to see in large-scale
 test suites?
@@ -461,6 +461,82 @@ particularly those which are pure `DBI` based are welcome in this area.
 **Recommendation**: Fine-grained, well-documented fixtures which are easy to
 create and easy to clean up.
 
+### Code coverage is spotty
+
+Consider the following pseudo-code:
+
+    float recip(float number) {
+        return 1/number;
+    }
+
+And a sample test:
+
+    assert recip(2.0) returns .5;
+
+Congratulations! You now have 100% code coverage of that function.
+
+For a statically typed language, I'm probably going to be moderately
+comfortable with that test. Alas, for dynamically typed languages we're
+fooling ourselves. An equivalent function in Perl will pass that test if use
+`recip("2 apples")` as the argument. And what happens if we pass a file
+handle? And would a Unicode number work? What happens if we pass no arguments?
+Perl is powerful and lets us write code quickly, but there's a price: it
+expects us to know what we're doing and passing unexpected kinds of data is a
+very common source of error, but one that 100% code coverage will never (no
+pun intended) uncover. This can lead to false confidence. To work around this,
+always assume that you write applications to create things and you write tests
+to destroy them. Testing is, and should be, an act of violence. If you're not
+breaking anything with your tests, you're probably doing it wrong.
+
+Or what if you have that code in a huge test suite, but it's dead code? We
+tend to blindly run code coverage over our entire test suite, never
+considering whether or not we're testing dead code. This is because we slop
+our unit, integration, API and other tests all together.
+
+Or consider the following test case:
+
+    sub forum : Tests(1) {
+        my $self = shift;
+        my $site = $self->test_website;
+        $site->login($user, $pass);
+        $site->get('/forum');
+        $site->follow_link( text => 'Off Topic' );
+        $site->post_ok({
+            title => 'What is this?',
+            body  => 'This is a test'.
+        }, 'We should be able to post to the forum');
+    }
+
+`Devel::Cover` doesn't know which code is test code and which is not.
+`Devel::Cover` merely tells you if your application code was exercised in your
+tests. [You can annotate your code with "uncoverable"
+directives](http://search.cpan.org/dist/Devel-Cover/lib/Devel/Cover.pm#UNCOVERABLE_CRITERIA)
+to tell `Devel::Cover` to ignore the following code, but that potentially
+means sprinkling your code with annotations all over the place.
+
+There are multiple strategies to deal with this. One of the simplest is to
+merely run your code coverage tools over the public-facing portions of your
+code, such as web or API tests. If you find uncovered code, you either have
+code that is not fully tested (in the sense that you don't know if your API
+can really use that code) or, if you cannot write an API test to reach that
+code, investigate if it is dead code.
+
+You can do this by grouping your tests into subdirectories:
+
+    t/
+    |--api/
+    |--integration/
+    `--unit/
+
+Alternatively, if you use `Test::Class::Moose`, you can tag your tests and
+only run coverage over tests including the tags you wish to test:
+
+    My::Test::Class::Moose->new({
+      include_tags => [qw/api/],
+    })->runtests;
+
+**Recommendation**: Only run `Devel::Cover` over public-facing code.
+
 ### They take far too long to run
 
 The problem with long-running test suites is well known, but it's worth
@@ -490,7 +566,7 @@ Here are some of the issues with long-running test suites:
 What I find particularly curious is that we accept this state of affairs. Even
 a back-of-the-envelope calculation can quickly show significant productivity
 benefits that will pay off in the long run by taking care of our test suite.
-[I once reduced a test suite's run time from one hour and twenty minutes down
+[I once reduced a sample test suite's run time from one hour and twenty minutes down
 to twelve
 minutes](http://www.slideshare.net/Ovid/turbo-charged-test-suites-presentation)
 (*Note: today I use a saner approach that results in similar or greater
@@ -633,8 +709,8 @@ If your code base makes heavy use of modules that are slow to load, such as
 [forkprove](http://search.cpan.org/~miyagawa/forkprove-v0.4.9/script/forkprove)
 is a utility written by Tatsuhiko Miyagawa that allows you to preload
 slow-loading modules and then forks off multiple processes to run your tests.
-Using this tool, [I reduced one test suite's run time from 12 minutes to about
-a
+Using this tool, [I reduced one sample test suite's run time from 12 minutes
+to about a
 minute](http://blogs.perl.org/users/ovid/2013/12/merry-christmas-parallel-testing-with-testclassmoose-has-arrived.html).
 Unfortunately, `forkprove` doesn't allow schedules, a key component often
 needed for larger test suites. I'll explain that in the next section.
@@ -697,6 +773,25 @@ combine them into a single stream.
 
 #### Devel::CoverX::Covered
 
+There is yet another interesting strategy: only run tests that exercise the
+code that you're changing. Johan Lindström wrote
+[Devel::CoverX::Covered](http://search.cpan.org/dist/Devel-CoverX-Covered/).
+This modules is used in conjunction with Paul Johnson's
+[Devel::Cover](http://search.cpan.org/dist/Devel-Cover/) to identify all the
+places in your tests which cover a particular piece of code. In the past, I've
+written tools for vim to read this data and only run relevant tests. This is a
+generally useful approach, but there are a couple of pitfalls.
 
+First, if you test suite takes a long time to run, it will take much, much
+longer to run with `Devel::Cover`. As a result, I recommend that this be used
+with a special nightly "cover build" and have the results synched back to the
+developers.
 
-### Code coverage is spotty
+Second, when changing code, it's easy to change which tests cover your code,
+leading to times when this technique won't cover your actual changes
+thoroughly. In practice, this hasn't been a problem for me, but I've not used
+it enough to say that with confidence.
+
+**Recommendation**: Don't settle for slow test suites. Pick a goal and work to
+achieving that goal (it's easy to keep optimizing for too long and start
+getting diminishing marginal returns).

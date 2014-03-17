@@ -463,4 +463,24 @@ create and easy to clean up.
 
 ### They take far too long to run
 
+The problem with long-running test suites is well known, but it's worth
+covering this again here. These are problems that others have discussed and
+that I have also personally experienced many times.
+
+![Perl's version of waiting for a compile](http://i.imgur.com/JNfyxoo.png)
+
+In the best case scenario for a long-running test suite, expensive developer
+time is wasted while the test suite is running. When they launch that
+hour-long (or more) test suite, they frequently take a break, talk to (read:
+interrupt) other developers, check their Facebook, or do any number of things
+which equate to "not writing software." Yes, some of those things involve
+meetings or research, but meetings don't conveniently schedule themselves when
+we run tests and for mature products (those which are more likely to have
+long-running test suites), there's often not that much research we really need
+to do.
+
+* Expensive developer time is wasted while the test suite runs
+* Developers often don't run the entire test suite
+* Code is fragile
+
 ### Code coverage is spotty

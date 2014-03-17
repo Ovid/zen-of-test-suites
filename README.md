@@ -1,15 +1,16 @@
-# The Zen of Test Suites
+# The Zen of Application Test Suites
 
 Serious testing for serious software (work in progress)
 
 ## Introduction
 
-**Note**: This document is about testing applications. They require a
-different, more disciplined approach than testing libraries. I describe common
-misfeatures experienced in large application test suites and follow with
-desirable features. Much of what I describe below is generic and applies to
-test suites written in any programming language, despite many examples being
-written in Perl. As I get further along, I'll start discussing
+**Note**: This document is about testing applications; it's not about how to
+write tests. Application test suites require a different, more disciplined
+approach than library test suites. I describe common misfeatures experienced
+in large application test suites and follow with desirable features. Much of
+what I describe below is generic and applies to test suites written in any
+programming language, despite many examples being written in Perl. As I get
+further along, I'll start discussing
 [Test::Class::Moose](https://github.com/Ovid/test-class-moose), a testing
 framework written in Perl. While the concepts will still generally be generic,
 the implementation examples will be in Perl.
@@ -95,11 +96,11 @@ test suites?
 * Testing code should not be duplicated
 * Code coverage should be able to analyze different aspects of the system
 
-But first, let's take a look at some of the problems and try to understand
-their impacts. While it's good to push a test suite into a desirable state,
-often this is risky if the underlying problems are ignored. I will offer
-recommendations for resolving each problem, but it's important to understand
-that these are *recommendations*. They may not apply to your situation.
+Let's take a look at some of the problems and try to understand their impacts.
+While it's good to push a test suite into a desirable state, often this is
+risky if the underlying problems are ignored. I will offer recommendations for
+resolving each problem, but it's important to understand that these are
+*recommendations*. They may not apply to your situation.
 
 ### Tests often emit warnings
 
@@ -463,10 +464,10 @@ create and easy to clean up.
 
 ### Code coverage is spotty
 
-Consider the following pseudo-code:
+Consider the following code:
 
     float recip(float number) {
-        return 1/number;
+        return 1.0 / number;
     }
 
 And a sample test:
@@ -795,3 +796,43 @@ it enough to say that with confidence.
 **Recommendation**: Don't settle for slow test suites. Pick a goal and work to
 achieving that goal (it's easy to keep optimizing for too long and start
 getting diminishing marginal returns).
+
+# [Test::Class::Moose](https://github.com/Ovid/test-class-moose)
+
+If you're using Perl, many of the above problems can be avoided by switching
+to `Test::Class::Moose`. This is a testing framework I designed to make it
+very easy to test applications. Once you understand it, it's actually easy to
+use for testing libraries, but it really shines for application testing.
+
+Note that I now regret putting `Moose` in the name. `Test::Class::Moose` is a
+rewrite of `Test::Class` using `Moose`, but it's *not* limited to testing
+`Moose` applications. It uses `Moose` because internally it relies on
+`Moose`'s meta-object protocal for introspection.
+
+Out of the box you get:
+
+* Reporting
+* Parallel tests (which optionally accepts a custom schedule)
+* Tagging tests (slice and dice your test suite!)
+* Test inheritance (xUnit for the win!)
+* Full Moose support
+* Test control methods (startup, setup, teardown, shutdown)
+* Extensibility
+
+# About The Author
+
+For those of you who may be reading this and are not familiar with me, I am
+Curtis "Ovid" Poe. I authored the test harness that ships with the Perl
+programming language. I wrote the well-reviewed book [Beginning
+Perl](http://www.amazon.com/Beginning-Perl-Curtis-Poe/dp/1118013840/ref=sr_1_1?s=books&ie=UTF8&qid=1395074590&sr=1-1&keywords=beginning+perl+curtis+poe&tag=overse-20)
+and and am one of the authors of [Perl
+Hacks](http://www.amazon.com/Perl-Hacks-Programming-Debugging-Surviving/dp/0596526741/)
+(how's that for a redundant title?). I also sit on [the Board of Directors of
+the Perl Foundation](http://www.perlfoundation.org/who_s_who) and am one of
+the people behind [All Around The World](http://www.allaroundtheworld.fr/), a
+company offering software consulting, training, and international IT
+recruiting.
+
+If you'd like to hire me to fix your test suite or write software for you,
+drop me a line at
+[jobs@allaroundtheworld.fr](mailto:jobs@allaroundtheworld.fr).

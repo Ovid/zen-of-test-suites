@@ -821,10 +821,19 @@ getting diminishing marginal returns).
 
 # [Test::Class::Moose](https://github.com/Ovid/test-class-moose)
 
-If you're using Perl, many of the above problems can be avoided by switching
-to `Test::Class::Moose`. This is a testing framework I designed to make it
-very easy to test applications. Once you understand it, it's actually easy to
-use for testing libraries, but it really shines for application testing.
+If you start creating a large Web site, do you start writing a bunch of
+individual scripts, each designed to handle one URL and each handling their
+own database access and printing their output directly to STDOUT? Of course
+not. Today, professional developers reach for Sinatra, Seaside, Catalyst, Ruby
+on Rails or other Web frameworks. They take a bit more time to set up and
+configure, but we know they generally save more time in the long run. Why
+wouldn't you do that with your test suite?
+
+If you're using Perl, many of the problems listed in this document can be
+avoided by switching to `Test::Class::Moose`. This is a testing framework I
+designed to make it very easy to test applications. Once you understand it,
+it's actually easy to use for testing libraries, but it really shines for
+application testing.
 
 Note that I now regret putting `Moose` in the name. `Test::Class::Moose` is a
 rewrite of `Test::Class` using `Moose`, but it's *not* limited to testing

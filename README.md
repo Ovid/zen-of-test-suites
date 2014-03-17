@@ -481,8 +481,65 @@ we run tests and for mature products (those which are more likely to have
 long-running test suites), there's often not that much research we really need
 to do.
 
+Here are some of the issues with long-running test suites:
+
 * Expensive developer time is wasted while the test suite runs
 * Developers often don't run the entire test suite
-* Code is fragile
+* Code is fragile as a result
+
+What I find particularly curious is that we accept this state of affairs. Even
+a back-of-the-envelope calculation can quickly show significant productivity
+benefits that will pay off in the long run by taking care of our test suite.
+[I once reduced a test suite's run time from one hour and twenty minutes down
+to twelve
+minutes](http://www.slideshare.net/Ovid/turbo-charged-test-suites-presentation)
+(*Note: today I use a saner approach that results in similar or greater
+performance benefits*).  We had six developers on that team. When the test
+suite took over an hour to run, they often didn't run the test suite. They
+would run tests on their section of code and push their code when they were
+comfortable with it. This led to other developers finding buggy code and
+wasting time trying to figure out how they broken it when, in fact, someone
+else broke the code.
+
+But let's assume each developer was running the test suite at least once a
+day. By cutting test suite run time by over an hour, we reclaimed a *full day*
+of developer productivity every day! Even if it takes a developer a month to
+increase perfomance by that amount it pays for itself many times over very
+quickly. Why would you not do this?
+
+There are several reasons why this is difficult. Tasking a developer with a
+block of time to speed up a test suite means the developer is not creating
+user-visible features during that time. For larger test suites, it's often
+impossible to know in advance just how much time you can save or how long it
+will take you to reach your goal. In most companies I've worked with, the
+people who can make the decision to speed up the test suite are often not the
+people feeling the pain. Productivity and quality decrease slowly over time,
+leading to the [boiling frog
+problem](http://en.wikipedia.org/wiki/Boiling_frog).
+
+What's worse: in order to speed up your test suite without affecting behavior,
+the test suite often has to be "fixed" (eliminating warnings, failures, and
+reducing duplication) to ensure that no behavior has been changed during the
+refactor.
+
+Finally, some developers simply don't have the background necessary to
+implement performance optimizations. While performance profiles such as Perl's
+[Devel::NYTProf](http://search.cpan.org/dist/Devel-NYTProf/lib/Devel/NYTProf.pm)
+can easily point out problem areas in the code, it's not always clear how to
+overcome the discovered limitations.
+
+The single biggest factor in poor test suite performance for applications is
+frequently I/O. In particular, working with the database tends to be a
+bottleneck and there's only so much database tuning that can be done. Several
+database-related optimizations which can be considered are:
+
+1. Using transactions to clean up your database rather than rebuilding the
+   database
+2. Only connect to the database once per test suite (hard when you're using
+   separate processes
+3. If you must rebuild the database, maintain a pool of test databases and
+   assign them as needed, rebuilding used ones in the background
+
+
 
 ### Code coverage is spotty

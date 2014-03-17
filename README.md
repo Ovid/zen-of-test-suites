@@ -1,6 +1,6 @@
 # The Zen of Test Suites
 
-Serious testing for serious software
+Serious testing for serious software (work in progress)
 
 ## Introduction
 
@@ -168,6 +168,11 @@ the test as `TODO` so that the test suite can pass. Not only does this help to
 guide you to a clean test suite, the `TODO` reason is generally embedded in
 the test, giving the next developer a clue what's going on.
 
+**Recommendation**: Do not allow any failing tests. If tests fail which do not
+impact the correctness of the appliaction (such as documentation or "coding style"
+tests), they should be separated from your regular tests in some manner and
+your systems should recognize that it's OK for them to fail.
+
 ### There is little evidence of organization
 
 As mentioned previously, a common lament amongst developers is the difficulty
@@ -242,9 +247,8 @@ directories inside of your test directory may be structured differently:
     ├── api/
     └── web/
 
-So long as the test directories in those top-level directories follow a
-predictable, discoverable structure, the test suite should be much easier to
-work with.
+**Recommendation**: Organize your test files to have a predictable,
+discoverable structure. The test suite should be much easier to work with.
 
 ### Much of the testing code is duplicated
 
@@ -352,11 +356,36 @@ understanding in multiple places. Further, it makes it easier to find patterns
 in your code and any competent programmer is always on the lookout for
 patterns because those are signposts leading to cleaner designs.
 
+**Recommendation**: Keep your test code as clean as your application code.
+
 ### Testing fixtures are frequently not used (or poorly used)
+
+One difference between your application code and the test suite is in an
+application, we often have no idea what the data will be and we try to have a
+clean separation of data and code.
+
+In your test suite, we also want a clean separation of data and code (in my
+experience, this is very hit-or-miss), but we often *need* to know the data we
+have. We set up data to run tests against to ensure that we can test various
+conditions. Can we give a customer a birthday discount if they
+were born February 29th? Can a customer with an overdue library book check out
+another? If our employee number is no longer in the database, is our code
+properly deleted, along with the backups? (kidding!)
+
+When we set up the data for these known conditions under which to test, we
+call the data a [test fixture](http://en.wikipedia.org/wiki/Test_fixture).
+Test fixtures, when properly designed, allow us generate clean,
+understandable tests and make it easy to write tests for unusual conditions
+that may otherwise be hard to analyze.
+
+There are several common anti-patterns I see in fixtures.
+
+* Hard to set up and use
+* Adding them to the database and not rolling them back
+* Loading all your test data at once with no granularity
+
+
 
 ### They take far too long to run
 
-
 ### Code coverage is spotty
-
-

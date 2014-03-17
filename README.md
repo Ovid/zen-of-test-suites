@@ -469,6 +469,8 @@ that I have also personally experienced many times.
 
 ![Perl's version of waiting for a compile](http://i.imgur.com/JNfyxoo.png)
 
+*With apologies to [XKCD](http://xkcd.com/303/)*
+
 In the best case scenario for a long-running test suite, expensive developer
 time is wasted while the test suite is running. When they launch that
 hour-long (or more) test suite, they frequently take a break, talk to (read:

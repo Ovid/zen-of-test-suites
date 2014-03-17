@@ -4,13 +4,13 @@ Serious testing for serious software (work in progress)
 
 ## Introduction
 
-**Note**: This document is about testing applications; it's not about how to
-write tests. Application test suites require a different, more disciplined
-approach than library test suites. I describe common misfeatures experienced
-in large application test suites and follow with desirable features. Much of
-what I describe below is generic and applies to test suites written in any
-programming language, despite many examples being written in Perl. As I get
-further along, I'll start discussing
+This document is about testing applications — it's not about how to write
+tests. Application test suites require a different, more disciplined approach
+than library test suites. I describe common misfeatures experienced in large
+application test suites and follow with recommendations on best practices.
+Much of what I describe below is generic and applies to test suites written in
+any programming language, despite many examples being written in Perl. As I
+get further along, I'll start discussing
 [Test::Class::Moose](https://github.com/Ovid/test-class-moose), a testing
 framework written in Perl. While the concepts will still generally be generic,
 the implementation examples will be in Perl.
@@ -828,8 +828,9 @@ tutorial I published at Modern Perl Books:
 4. [Using test control methods with Test::Class](http://www.modernperlbooks.com/mt/2009/03/using-test-control-methods-with-testclass.html)
 5. [Working with Test::Class test suites](http://www.modernperlbooks.com/mt/2009/03/working-with-testclass-test-suites.html)
 
-That tutorial is slightly out of day (I wrote it five years ago) and explains
-effective use of `Test::Class`.
+That tutorial is slightly out of date (I wrote it five years ago), but it
+explains effective use of `Test::Class` and some common anti-patterns when
+using it.
 
 Doug Bell has started [a tutorial for
 Test::Class::Moose](http://search.cpan.org/dist/Test-Class-Moose/lib/Test/Class/Moose/Tutorial.pm).

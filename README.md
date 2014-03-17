@@ -628,8 +628,75 @@ under production-like loads) to understand the trade-offs here.
 
 #### Preload modules
 
+If your code base makes heavy use of modules that are slow to load, such as
+`Moose`, `Catalyst`, `DBIx::Class` and others, preloading them might help.
+[forkprove](http://search.cpan.org/~miyagawa/forkprove-v0.4.9/script/forkprove)
+is a utility written by Tatsuhiko Miyagawa that allows you to preload
+slow-loading modules and then forks off multiple processes to run your tests.
+Using this tool, [I reduced one test suite's run time from 12 minutes to about
+a
+minute](http://blogs.perl.org/users/ovid/2013/12/merry-christmas-parallel-testing-with-testclassmoose-has-arrived.html).
+Unfortunately, `forkprove` doesn't allow schedules, a key component often
+needed for larger test suites. I'll explain that in the next section.
+
 #### Parallel tests
 
+Running tests in parallel is tricky. Some tests simply *can't* be run with
+other tests. Usually these are tests which alter global state in some manner
+that other processes will pick up, or might cause resource starvation of some
+kind.
+
+Or some tests *can* be run in parallel with other tests, but if several tests
+are updating the same records in the database at the same time, locking
+behavior might slow down the tests considerably.
+
+Or maybe you're running 4 jobs, but all of your slowest tests are grouped in
+the same job: not good.
+
+To deal with this, you can create a schedule that assigns different tests to
+different jobs, based on a set of criteria, and then puts tests which cannot
+run in parallel in a single job that runs after the others have completed.
+
+You can use
+[TAP::Parser::Scheduler](http://search.cpan.org/dist/Test-Harness/lib/TAP/Parser/Scheduler.pm)
+to create an effective parallel testing setup. You can use this with
+`TAP::Parser::Multiplexer` to create your parallel tests. Unfortunately, as of
+this writing there's a bug in the Multiplexer whereby it uses `select` in a
+loop to read the parser output. If one parser blocks, none of the other output
+is run. Further, the schedule must be created prior to loading your test code,
+meaning that if your tests would prefer a different schedule. Also, `make
+test` currently doesn't handle this well. There is work being done by David
+Golden to alleviate this problem.
+
+My preferred solution is to use
+[Test::Class::Moose](http://search.cpan.org/dist/Test-Class-Moose/). That has
+built-in parallel testing and writing schedules is very easy. Further,
+different test cases can simply use a `Tags(noparallel)` attribute to ensure
+that they're run sequentially after the parallel tests.
+
+Aside from the regular benefits of `Test::Class::Moose`, an interesting
+benefit of this module is that it loads all of your test and application code
+into a single process and *then* forks off subprocesses. As a result, your
+code is loaded once and only once. Strategies which try to fork before loading
+your code might still cause the code to be loaded multiple times.
+
+I have used this strategy to reduce a [12 minute test suite to 30
+seconds](http://blogs.perl.org/users/ovid/2013/12/merry-christmas-parallel-testing-with-testclassmoose-has-arrived.html).
+
+#### Distributed tests
+
+Though I haven't used this module, Alex Vandiver has written
+[TAP::Harness::Remote](http://search.cpan.org/dist/TAP-Harness-Remote/lib/TAP/Harness/Remote.pm).
+This module allows you to rsync directory trees to multiple servers and run
+tests on those servers. Obviously, this requires multiple servers.
+
+If you want to roll your own version of this, I've also released
+[TAP::Stream](http://search.cpan.org/dist/TAP-Stream/), a module that allows
+you to take streams (the text, actually) of TAP from multiple sources and
+combine them into a single stream.
+
 #### Devel::CoverX::Covered
+
+
 
 ### Code coverage is spotty

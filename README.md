@@ -819,6 +819,24 @@ Out of the box you get:
 * Test control methods (startup, setup, teardown, shutdown)
 * Extensibility
 
+To learn about xUnit testing in Perl, you may wish to read a five-part
+tutorial I published at Modern Perl Books:
+
+1. [Organizing test suites with Test::Class](http://www.modernperlbooks.com/mt/2009/03/organizing-test-suites-with-testclass.html)
+2. [Reusing test code with Test::Class](http://www.modernperlbooks.com/mt/2009/03/reusing-test-code-with-testclass.html)
+3. [Making your testing life easier](http://www.modernperlbooks.com/mt/2009/03/making-your-testing-life-easier.html)
+4. [Using test control methods with Test::Class](http://www.modernperlbooks.com/mt/2009/03/using-test-control-methods-with-testclass.html)
+5. [Working with Test::Class test suites](http://www.modernperlbooks.com/mt/2009/03/working-with-testclass-test-suites.html)
+
+That tutorial is slightly out of day (I wrote it five years ago) and explains
+effective use of `Test::Class`.
+
+Doug Bell has started [a tutorial for
+Test::Class::Moose](http://search.cpan.org/dist/Test-Class-Moose/lib/Test/Class/Moose/Tutorial.pm).
+That also needs updating, but between those and reading the
+`Test::Class::Moose` documentation, you should be able to get up to speed
+fairly quickly.
+
 # About The Author
 
 For those of you who may be reading this and are not familiar with me, I am

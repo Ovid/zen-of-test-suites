@@ -530,8 +530,9 @@ overcome the discovered limitations.
 
 The single biggest factor in poor test suite performance for applications is
 frequently I/O. In particular, working with the database tends to be a
-bottleneck and there's only so much database tuning that can be done. Several
-database-related optimizations which can be considered are:
+bottleneck and there's only so much database tuning that can be done. After
+you've profiles your SQL and optimized it, several database-related
+optimizations which can be considered are:
 
 1. Using transactions to clean up your database rather than rebuilding the
    database
@@ -539,7 +540,96 @@ database-related optimizations which can be considered are:
    separate processes
 3. If you must rebuild the database, maintain a pool of test databases and
    assign them as needed, rebuilding used ones in the background
+4. Use smaller database fixtures instead of loading everything at once
 
+After you've done all you can to improve your database access, you may find
+that your test suite is "fast enough", but if you wish to go further, there
+are several steps you can take.
 
+#### Use [Test::Aggregate](http://search.cpan.org/dist/Test-Aggregate/)
+
+`Test::Aggregate` can often double the speed of your test suite (I've had it
+speed up test suites by around 65%). It does this by taking your separate
+`*.t` files and runs them in a single process. Not all tests can be run this
+way (tests that munge global state without cleaning up are prime examples),
+but it's the easiest way to get a quick boost to test suite performance.
+
+#### Aggressively search for and remove duplicated tests.
+
+For poorly organized test suites, developers sometimes make the mistake of
+putting tests for something in a new `*.t` file or add them to a different
+`*.t` file, even if related tests already exist. This strategy can be
+time-consuming and often does not result in quick wins.
+
+#### Use `Devel::NYTProf` aggressively.
+
+For one test suite, I found that we were using a pure Perl implementation of
+JSON. As the test suite used JSON extensively, switching to
+[JSON::XS](http://search.cpan.org/dist/JSON-XS/XS.pm) gave us a nice
+performance boost. We may not have noticed that if we hadn't been profiling
+our code.
+
+#### Inline "hot" functions.
+
+Consider the following code which runs in about 3.2 seconds on my computer:
+
+    #!/usr/bin/env perl
+
+    use strict;
+    use warnings;
+    no warnings 'recursion';
+
+    for my $i ( 1 .. 40 ) {
+        for my $j ( 1 .. $i**2 ) {
+            my $y = factorial($j);
+        }
+    }
+
+    sub factorial {
+        my $num = shift;
+        return 1 if $num <= 1;
+        return $num * factorial($num - 1);
+    }
+
+By rewriting the recursive function as a loop, the code takes about .87
+seconds:
+
+    sub factorial {
+        my $num = shift;
+        return 1 if $num <= 1;
+        $num *= $_ for 2 .. $num - 1;
+        return $num;
+    }
+
+By inlining the calculation, the code completes in .69 seconds:
+
+    for my $i ( 1 .. 40 ) {
+        for my $j ( 1 .. $i**2 ) {
+            my $y = $j;
+            if ( $y > 1 ) {
+                $y *= $_ for 2 .. $y - 1;
+            }
+        }
+    }
+
+In other words, in our trivial example, the inlined behavior is roughly 20%
+faster than the iterative function and 80% faster than the recursive function.
+
+#### Recompile your Perl
+
+You may wish to recompile your Perl to gain a performance improvement. Many
+Linux distributions ship with a threaded Perl by default. Depending on the
+version of Perl you ship with, you can gain performance improvements of up to
+30% by recompiling without threads. Of course, if you use threads, you'll feel
+very stupid for doing this. However, if you don't make heavy use of threads,
+switching for a forking model for the threaded code may make the recompile
+worth it. Naturally, you'll need to heavily benchmark your code (preferably
+under production-like loads) to understand the trade-offs here.
+
+#### Preload modules
+
+#### Parallel tests
+
+#### Devel::CoverX::Covered
 
 ### Code coverage is spotty

@@ -6,7 +6,7 @@ Serious testing for serious software (work in progress)
 
 **Note**: This document is about testing applications. They require a
 different, more disciplined approach than testing libraries. I describe common
-mis-features experienced in large application test suites and follow with
+misfeatures experienced in large application test suites and follow with
 desirable features. Much of what I describe below is generic and applies to
 test suites written in any programming language, despite many examples being
 written in Perl. As I get further along, I'll start discussing

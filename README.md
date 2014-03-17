@@ -427,7 +427,12 @@ Because transactions were not used and changes could not be rolled back, each
 due to lack of documentation about the fixtures, it was often difficult to
 figure out which combination of fixtures to load to test a given fixture. Part
 of this is simply due to the complex nature of the business rules, but the
-core issues stemmed from a poor understanding of fixtures.
+core issues stemmed from a poor understanding of fixtures. This client now has
+multiple large, slow test suites, spread across multiple repositories, all of
+which constantly tear down and set up databases and load large amounts of
+data. The test suites are both slow and fragile The time and expense to fix
+this problem is considerable due to how long they've pushed forward with this
+substandard setup.
 
 What you generally want is the ability to easily create understandable
 fixtures which are loaded in a transaction, tests are run, and then changes
@@ -439,6 +444,19 @@ One attempt I've made to fix this situation is releasing
 along with [a tutorial](http://search.cpan.org/dist/DBIx-Class-EasyFixture/lib/DBIx/Class/EasyFixture/Tutorial.pm).
 It does rely on `DBIx::Class`, the most popular ORM for Perl. This will likely
 make it unsuitable for some uses cases.
+
+Using them is very simple:
+
+    my $fixtures = DBIx::Class::EasyFixture->new(schema => $schema);
+    $fixtures->load('customer_with_order_without_items');
+
+    # run your tests
+
+    $fixtures->unload; # also unloads when out of scope
+
+For the customer's code, we could satisfy the different database requirements
+by passing in different schemas. Other (well-documented) solutions,
+particularly those which are pure `DBI` based are welcome in this area.
 
 **Recommendation**: Fine-grained, well-documented fixtures which are easy to
 create and easy to clean up.

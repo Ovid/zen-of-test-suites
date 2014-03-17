@@ -97,7 +97,9 @@ test suites?
 
 But first, let's take a look at some of the problems and try to understand
 their impacts. While it's good to push a test suite into a desirable state,
-often this is risky if the underlying problems are ignored.
+often this is risky if the underlying problems are ignored. I will offer
+recommendations for resolving each problem, but it's important to understand
+that these are *recommendations*. They may not apply to your situation.
 
 ### Tests often emit warnings
 
@@ -384,7 +386,62 @@ There are several common anti-patterns I see in fixtures.
 * Adding them to the database and not rolling them back
 * Loading all your test data at once with no granularity
 
+In reviewing various fixture modules on the CPAN and for clients I have worked
+with, much of the above routinely holds true. On top of that, documentation is
+often rather sparse or non-existent. Here's a (pseudo-code) example of an
+almost undocumented fixture system for one client I worked with and it
+exemplified common issues in this area.
 
+    load_fixture(
+        database => 'sales',
+        client   => $client_id,
+        datasets => [qw/ customers orders items order_items referrals /],
+    );
+
+This had several problems, all of which could be easily corrected *as code*,
+but they built a test suite around these problems and had backed themselves
+into a corner, making their test suite dependent on bad behavior.
+
+The business case is that my client had a product serving multiple customers
+and each customer would have multiple separate databases. In the above,
+client *$client_id* connects to their sales database and we load several test
+datasets and run tests against them. However, loading of data was not done in
+a transaction, meaning that there was no isolation between different test
+cases in the same process. More than once I caught issues where running an
+individual test case would often fail because it depended on data loaded by a
+different test case, but it wasn't always clear which test cases were coupled
+with which.
+
+Another issue is that fixtures were not fine-tuned to address particular test
+cases. Instead, if you loaded "customers" or "referrals", you got *all* of
+them in the database. Do you need a database with a single customer with a
+single order and only one order item on it to test that obscure bug that
+occurs when a client first uses your software? There really wasn't any clean
+way of doing that; data was loaded in an "all or nothing" context. Even if you
+violated the paradigm and tried to create fine-tuned fixtures, it was very,
+very hard to write them due to the obscure, undocumented format needed to
+craft the data files for them.
+
+Because transactions were not used and changes could not be rolled back, each
+`*.t` file would rebuild its own test database, a very slow process. Further,
+due to lack of documentation about the fixtures, it was often difficult to
+figure out which combination of fixtures to load to test a given fixture. Part
+of this is simply due to the complex nature of the business rules, but the
+core issues stemmed from a poor understanding of fixtures.
+
+What you generally want is the ability to easily create understandable
+fixtures which are loaded in a transaction, tests are run, and then changes
+are rolled back.  The fixtures need to be fine-grained so you can tune them
+for a particular test case.
+
+One attempt I've made to fix this situation is releasing
+[DBIx::Class::EasyFixture](http://search.cpan.org/dist/DBIx-Class-EasyFixture/lib/DBIx/Class/EasyFixture.pm),
+along with [a tutorial](http://search.cpan.org/dist/DBIx-Class-EasyFixture/lib/DBIx/Class/EasyFixture/Tutorial.pm).
+It does rely on `DBIx::Class`, the most popular ORM for Perl. This will likely
+make it unsuitable for some uses cases.
+
+**Recommendation**: Fine-grained, well-documented fixtures which are easy to
+create and easy to clean up.
 
 ### They take far too long to run
 

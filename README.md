@@ -327,31 +327,33 @@ library:
 
         foreach my $test (@$tests) {
             my ( $attribute, $expected ) = @$test;
-            is $object->$attribute, $expected, "$attribute works";
+            is $object->$attribute, $expected, "$attribute works for $class $id";
         }
     }
 
 And then you call it like this:
 
-    my %id_tests = (
-        $id => [
+    my @id_tests = (
+        { id => $id,
+          tests => [
             [ attr1 => $expected1 ],
             [ attr2 => $expected2 ],
             [ attr3 => $expected3 ],
             [ attr4 => $expected4 ],
             [ attr5 => $expected5 ],
-        ],
-        $new_id => [
+        ]},
+        { id => $new_id,
+          tests  => [
             [ attr1 => $new_expected1 ],
             [ attr2 => $new_expected2 ],
             [ attr3 => $new_expected3 ],
             [ attr4 => $new_expected4 ],
             [ attr5 => $new_expected5 ],
-        ],
+        ]},
     );
 
-    while ( my ( $id, $tests ) = each %id_tests ) {
-        test_fetching_by_id( 'Object', $id, $tests );
+    for my $test ( @id_tests ){
+          test_fetching_by_id( 'Object', $test->{id}, $tests->{test} );
     }
 
 This is a cleanly refactored data-driven approach. By not repeating yourself,

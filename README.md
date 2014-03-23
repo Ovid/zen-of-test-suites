@@ -68,7 +68,7 @@ sitting down and writing code, the developers are hunting for the tests,
 wondering if there are any tests for the feature they're working on and, if
 not, trying to figure out where to put their new tests.
 
-Unfortunately, this disorganzation is only the start of the problem.
+Unfortunately, this disorganization is only the start of the problem.
 
 ## Large-scale test suites
 

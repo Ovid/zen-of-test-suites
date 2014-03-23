@@ -11,6 +11,8 @@ application test suites and follow with recommendations on best practices.
 Much of what I describe below is generic and applies to test suites written in
 any programming language, despite many examples being written in Perl.
 
+For those wishing to share this with others, [here's a cleaner layout for you](http://ovid.github.io/zen-of-test-suites/).
+
 # Introduction
 
 I often speak with developers who take a new job and they describe a Web site

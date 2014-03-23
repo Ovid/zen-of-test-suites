@@ -46,6 +46,8 @@ application test suites and follow with recommendations on best practices.
 Much of what I describe below is generic and applies to test suites written in
 any programming language, despite many examples being written in Perl.</p>
 
+<p>For those wishing to share this with others, <a href="http://ovid.github.io/zen-of-test-suites/">here's a cleaner layout for you</a>.</p>
+
 <h1>
 <a name="introduction" class="anchor" href="#introduction"><span class="octicon octicon-link"></span></a>Introduction</h1>
 
@@ -106,7 +108,7 @@ sitting down and writing code, the developers are hunting for the tests,
 wondering if there are any tests for the feature they're working on and, if
 not, trying to figure out where to put their new tests.</p>
 
-<p>Unfortunately, this disorganzation is only the start of the problem.</p>
+<p>Unfortunately, this disorganization is only the start of the problem.</p>
 
 <h2>
 <a name="large-scale-test-suites" class="anchor" href="#large-scale-test-suites"><span class="octicon octicon-link"></span></a>Large-scale test suites</h2>
@@ -384,32 +386,34 @@ library:</p>
 
     foreach my $test (@$tests) {
         my ( $attribute, $expected ) = @$test;
-        is $object-&gt;$attribute, $expected, "$attribute works";
+        is $object-&gt;$attribute, $expected, "$attribute works for $class $id";
     }
 }
 </code></pre>
 
 <p>And then you call it like this:</p>
 
-<pre><code>my %id_tests = (
-    $id =&gt; [
+<pre><code>my @id_tests = (
+    { id =&gt; $id,
+      tests =&gt; [
         [ attr1 =&gt; $expected1 ],
         [ attr2 =&gt; $expected2 ],
         [ attr3 =&gt; $expected3 ],
         [ attr4 =&gt; $expected4 ],
         [ attr5 =&gt; $expected5 ],
-    ],
-    $new_id =&gt; [
+    ]},
+    { id =&gt; $new_id,
+      tests  =&gt; [
         [ attr1 =&gt; $new_expected1 ],
         [ attr2 =&gt; $new_expected2 ],
         [ attr3 =&gt; $new_expected3 ],
         [ attr4 =&gt; $new_expected4 ],
         [ attr5 =&gt; $new_expected5 ],
-    ],
+    ]},
 );
 
-while ( my ( $id, $tests ) = each %id_tests ) {
-    test_fetching_by_id( 'Object', $id, $tests );
+for my $test ( @id_tests ){
+      test_fetching_by_id( 'Object', $test-&gt;{id}, $tests-&gt;{test} );
 }
 </code></pre>
 

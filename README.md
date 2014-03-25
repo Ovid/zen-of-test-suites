@@ -61,7 +61,7 @@ test suites:
 
 That's actually fairly small. One codebase I worked on had close to a million
 lines of code with thousands of test scripts. You couldn't hold the codebase
-in your head, you're couldn't *glance* at the the tests to figure out what
+in your head, you're couldn't *glance* at the tests to figure out what
 went where, nor was grepping necessarily going to tell you as tests for
 particular sections of code were often scattered around multiple test scripts.
 And, of course, I regularly heard the lament that I've heard at many shops

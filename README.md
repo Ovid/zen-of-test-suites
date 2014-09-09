@@ -64,7 +64,7 @@ lines of code with thousands of test scripts. You couldn't hold the codebase
 in your head, you're couldn't *glance* at the tests to figure out what
 went where, nor was grepping necessarily going to tell you as tests for
 particular sections of code were often scattered around multiple test scripts.
-And, of course, I regularly heard the lament that I've heard at many shops
+And, of course, I regularly hear the lament I've heard at many shops
 with larger codebases: where are the tests for feature *X*? Instead of just
 sitting down and writing code, the developers are hunting for the tests,
 wondering if there are any tests for the feature they're working on and, if
@@ -120,7 +120,7 @@ In short: the code became easier to maintain.
 
 Another issue with warnings in the test suite is that they condition
 developers to ignore warnings. We get so used to them that we stop reading
-them, even if something serious is going on (on a related note, I often listed
+them, even if something serious is going on (on a related note, I often listen
 to developers complain about stack traces, but a careful reading of a stack
 trace will often reveal the exact cause of the exception). New warnings crop
 up, warnings change, but developers conditioned to ignore them often overlook
@@ -138,14 +138,14 @@ first started working on it, I had a developer walk me through all of the
 failures and explain why they failed and why they were hard to fix. Obviously
 this is a far more serious problem than warnings, but in the minds of the
 developers, they were under constant deadline pressures and as far as
-management was concerned, the test suite was practically a luxury, not
+management was concerned, the test suite was a luxury to keep developers happy, not
 "serious code." As a result, developers learned to recognize these failures
 and consoled themselves with the thought that they understood the underlying
 issues.
 
 Of course, that's not really how it works. The developer explaining the test
 failures admitted that he didn't understand some of them and with longer test
-suites that routinely fail, more failures tend to crop up, but developers
+suites that routinely fail, more failures tend to crop up. Developers
 conditioned to accept failures tend not to notice them. They kick off the test
 suite, run and grab some coffee and later glance over results to see if they
 look reasonable (that's assuming they run all of the tests, something which
@@ -268,7 +268,7 @@ refactor it so that it's in a single place and then change it. We already know
 why duplicated code is bad, I'm unsure why we tolerate this in test suites.
 
 Much of my work in tests has been to reduce this duplication. For example,
-many test scripts lists the same set of modules at the top. I did a heuristic
+many test scripts list the same set of modules at the top. I did a heuristic
 analysis of tests on the CPAN and chose the most popular testing modules and
 that allowed me to change this:
 
@@ -427,7 +427,7 @@ them in the database. Do you need a database with a single customer with a
 single order and only one order item on it to test that obscure bug that
 occurs when a client first uses your software? There really wasn't any clean
 way of doing that; data was loaded in an "all or nothing" context. Even if you
-violated the paradigm and tried to create fine-tuned fixtures, it was very,
+violated the paradigm and tried to create fine-tuned fixtures, it was
 very hard to write them due to the obscure, undocumented format needed to
 craft the data files for them.
 
@@ -890,4 +890,4 @@ recruiting.
 
 If you'd like to hire me to fix your test suite or write software for you,
 drop me a line at
-[jobs@allaroundtheworld.fr](mailto:jobs@allaroundtheworld.fr).
+[info@allaroundtheworld.fr](mailto:info@allaroundtheworld.fr).

@@ -61,7 +61,7 @@ test suites:
 
 That's actually fairly small. One codebase I worked on had close to a million
 lines of code with thousands of test scripts. You couldn't hold the codebase
-in your head, you're couldn't *glance* at the tests to figure out what
+in your head, you couldn't *glance* at the tests to figure out what
 went where, nor was grepping necessarily going to tell you as tests for
 particular sections of code were often scattered around multiple test scripts.
 And, of course, I regularly hear the lament I've heard at many shops
@@ -172,7 +172,7 @@ the test as `TODO` so that the test suite can pass. Not only does this help to
 guide you to a clean test suite, the `TODO` reason is generally embedded in
 the test, giving the next developer a clue to what's going on.
 
-**Recommendation**: Do not allow any failing tests. If tests fail which do not
+**Recommendation**: Do not allow any failing tests. If tests which fail do not
 impact the correctness of the application (such as documentation or "coding
 style" tests), they should be separated from your regular tests in some manner
 and your systems should recognize that it's OK for them to fail.
@@ -263,7 +263,7 @@ discoverable structure. The test suite should be much easier to work with.
 We're aghast that people routinely cut-n-paste their application code,
 but we don't even notice when people do this in their test code. More than
 once I've worked on a test suite with a significant logic change and I've had
-to find this duplicated code and either change it many places or try to
+to find this duplicated code and either change it in many places or try to
 refactor it so that it's in a single place and then change it. We already know
 why duplicated code is bad, I'm unsure why we tolerate this in test suites.
 
@@ -371,7 +371,7 @@ patterns because those are signposts leading to cleaner designs.
 
 ### Testing fixtures are frequently not used (or poorly used)
 
-One difference between your application code and the test suite is in an
+One difference between your application code and the test suite is that in an
 application, we often have no idea what the data will be and we try to have a
 clean separation of data and code.
 
@@ -619,7 +619,7 @@ reducing duplication) to ensure that no behavior has been changed during the
 refactor.
 
 Finally, some developers simply don't have the background necessary to
-implement performance optimizations. While performance profiles such as Perl's
+implement performance optimizations. While performance profilers such as Perl's
 [Devel::NYTProf](http://search.cpan.org/dist/Devel-NYTProf/lib/Devel/NYTProf.pm)
 can easily point out problem areas in the code, it's not always clear how to
 overcome the discovered limitations.

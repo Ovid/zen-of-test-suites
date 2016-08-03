@@ -771,7 +771,7 @@ of luck. Also, `make test` currently doesn't handle this well. There is work
 being done by David Golden to alleviate this problem.
 
 My preferred solution is to use
-[Test::Class::Moose](http://search.cpan.org/dist/Test-Class-Moose/). That has
+[Test::Class::Moose](http://search.cpan.org/dist/Test-Class-Moose/). It has
 built-in parallel testing and writing schedules is very easy. Further,
 different test cases can simply use a `Tags(noparallel)` attribute to ensure
 that they're run sequentially after the parallel tests.

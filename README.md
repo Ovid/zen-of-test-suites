@@ -633,7 +633,7 @@ optimizations which can be considered are:
 1. Using transactions to clean up your database rather than rebuilding the
    database
 2. Only connect to the database once per test suite (hard when you're using
-   a separate processe per test file)
+   a separate process per test file)
 3. If you must rebuild the database, maintain a pool of test databases and
    assign them as needed, rebuilding used ones in the background
 4. Use smaller database fixtures instead of loading everything at once
@@ -803,13 +803,13 @@ combine them into a single TAP document.
 There is yet another interesting strategy: only run tests that exercise the
 code that you're changing. Johan Lindström wrote
 [Devel::CoverX::Covered](http://search.cpan.org/dist/Devel-CoverX-Covered/).
-This modules is used in conjunction with Paul Johnson's
+This module is used in conjunction with Paul Johnson's
 [Devel::Cover](http://search.cpan.org/dist/Devel-Cover/) to identify all the
 places in your tests which cover a particular piece of code. In the past, I've
 written tools for vim to read this data and only run relevant tests. This is a
 generally useful approach, but there are a couple of pitfalls.
 
-First, if you test suite takes a long time to run, it will take much, much
+First, if your test suite takes a long time to run, it will take much, much
 longer to run with `Devel::Cover`. As a result, I recommend that this be used
 with a special nightly "cover build" and have the results synched back to the
 developers.
@@ -847,7 +847,7 @@ rewrite of `Test::Class` using `Moose`, but it's *not* limited to testing
 Out of the box you get:
 
 * Reporting
-* Parallel tests (which optionally accepts a custom schedule)
+* Parallel tests (which optionally accept a custom schedule)
 * Tagging tests (slice and dice your test suite!)
 * Test inheritance (xUnit for the win!)
 * Full Moose support

@@ -230,7 +230,7 @@ reorganized our tests to reflect our library hierarchy?
                 │   │   ├── tag.t
                 │   │   └── text.t
                 │   └── token.t
-                └── simple.t 
+                └── simple.t
 
 It's clear that the tests for `HTML::TokeParser::Simple::Token::Tag::Start`
 are in `t/tests/html/tokeparser/simple/token/tag/start.t`. And you can see

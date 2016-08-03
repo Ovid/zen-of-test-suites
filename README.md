@@ -75,7 +75,7 @@ Unfortunately, this disorganization is only the start of the problem.
 ## Large-scale test suites
 
 I've worked with many companies with large test suites and they tend to share
-some common problems. I list them in below in the order I try to address these
+some common problems. I list them below in the order I try to address these
 problems (in other words, roughly easiest to hardest).
 
 * Tests often emit warnings
@@ -260,7 +260,7 @@ discoverable structure. The test suite should be much easier to work with.
 
 ### Much of the testing code is duplicated
 
-We're aghast that that people routinely cut-n-paste their application code,
+We're aghast that people routinely cut-n-paste their application code,
 but we don't even notice when people do this in their test code. More than
 once I've worked on a test suite with a significant logic change and I've had
 to find this duplicated code and either change it many places or try to
@@ -880,7 +880,7 @@ For those of you who may be reading this and are not familiar with me, I am
 Curtis "Ovid" Poe. I authored the test harness that ships with the Perl
 programming language. I wrote the well-reviewed book [Beginning
 Perl](http://www.amazon.com/Beginning-Perl-Curtis-Poe/dp/1118013840/ref=sr_1_1?s=books&ie=UTF8&qid=1395074590&sr=1-1&keywords=beginning+perl+curtis+poe&tag=overse-20)
-and and am one of the authors of [Perl
+and am one of the authors of [Perl
 Hacks](http://www.amazon.com/Perl-Hacks-Programming-Debugging-Surviving/dp/0596526741/)
 (how's that for a redundant title?). I also sit on [the Board of Directors of
 the Perl Foundation](http://www.perlfoundation.org/who_s_who) and am one of

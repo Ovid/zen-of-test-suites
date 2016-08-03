@@ -864,7 +864,7 @@ tutorial I published at Modern Perl Books:
 4. [Using test control methods](http://www.modernperlbooks.com/mt/2009/03/using-test-control-methods-with-testclass.html)
 5. [Working with Test::Class test suites](http://www.modernperlbooks.com/mt/2009/03/working-with-testclass-test-suites.html)
 
-That tutorial is slightly out of date (I wrote it five years ago), but it
+That tutorial is slightly out of date (I wrote it in 2009), but it
 explains effective use of `Test::Class` and some common anti-patterns when
 using it.
 

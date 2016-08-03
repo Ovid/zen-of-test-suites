@@ -467,8 +467,8 @@ For the customer's code, we could satisfy the different database requirements
 by passing in different schemas. Other (well-documented) solutions,
 particularly those which are pure `DBI` based are welcome in this area.
 
-**Recommendation**: Fine-grained, well-documented fixtures which are easy to
-create and easy to clean up.
+**Recommendation**: Use fine-grained, well-documented fixtures which are
+easy to create and easy to clean up.
 
 ### Code coverage is poorly understood
 

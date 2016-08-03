@@ -454,7 +454,7 @@ along with [a tutorial](http://search.cpan.org/dist/DBIx-Class-EasyFixture/lib/D
 It does rely on `DBIx::Class`, the most popular ORM for Perl. This will likely
 make it unsuitable for some use cases.
 
-Using them is very simple:
+Using fixtures is now very simple:
 
     my $fixtures = DBIx::Class::EasyFixture->new(schema => $schema);
     $fixtures->load('customer_with_order_without_items');

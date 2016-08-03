@@ -147,7 +147,7 @@ Of course, that's not really how it works. The developer explaining the test
 failures admitted that he didn't understand some of them and with longer test
 suites that routinely fail, more failures tend to crop up. Developers
 conditioned to accept failures tend not to notice them. They kick off the test
-suite, run and grab some coffee and later glance over results to see if they
+suite, run and grab some coffee and later glance over the results to see if they
 look reasonable (that's assuming they run all of the tests, something which
 often stops happening at this point). What's worse, continuous integration
 tools are often built to accomodate this. From the Jenkin's [xUnit Plugin
@@ -170,7 +170,7 @@ failure is zero.
 If you absolutely cannot fix a particular failure, you should at least mark
 the test as `TODO` so that the test suite can pass. Not only does this help to
 guide you to a clean test suite, the `TODO` reason is generally embedded in
-the test, giving the next developer a clue what's going on.
+the test, giving the next developer a clue to what's going on.
 
 **Recommendation**: Do not allow any failing tests. If tests fail which do not
 impact the correctness of the application (such as documentation or "coding
@@ -378,7 +378,7 @@ clean separation of data and code.
 In your test suite, we also want a clean separation of data and code (in my
 experience, this is very hit-or-miss), but we often *need* to know the data we
 have. We set up data to run tests against to ensure that we can test various
-conditions. Can we give a customer a birthday discount if they were born
+conditions. Can we give a customer a birthday discount if they were born on
 February 29th? Can a customer with an overdue library book check out another?
 If our employee number is no longer in the database, is our code properly
 deleted, along with the backups and the git history erased? (kidding!)
@@ -591,7 +591,7 @@ performance benefits*).  We had six developers on that team. When the test
 suite took over an hour to run, they often didn't run the test suite. They
 would run tests on their section of code and push their code when they were
 comfortable with it. This led to other developers finding buggy code and
-wasting time trying to figure out how they broken it when, in fact, someone
+wasting time trying to figure out how they had broken it when, in fact, someone
 else broke the code.
 
 But let's assume each developer was running the test suite at least once a day

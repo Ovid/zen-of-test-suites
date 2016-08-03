@@ -439,7 +439,7 @@ of this is simply due to the complex nature of the business rules, but the
 core issues stemmed from a poor understanding of fixtures. This client now has
 multiple large, slow test suites, spread across multiple repositories, all of
 which constantly tear down and set up databases and load large amounts of
-data. The test suites are both slow and fragile The time and expense to fix
+data. The test suites are both slow and fragile. The time and expense to fix
 this problem is considerable due to how long they've pushed forward with this
 substandard setup.
 
